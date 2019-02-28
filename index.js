@@ -1,4 +1,4 @@
-// const _ = require('lodash');
+const _ = require('lodash');
 
 module.exports = {
    extend: 'apostrophe-widgets',
@@ -76,6 +76,7 @@ module.exports = {
          label: 'Widget 1',
          type: 'area',
          contextual: true,
+         options: {},
       },
 
       {
@@ -83,6 +84,7 @@ module.exports = {
          label: 'Widget 2',
          type: 'area',
          contextual: true,
+         options: {},
       },
 
       {
@@ -90,28 +92,8 @@ module.exports = {
          label: 'Widget 3',
          type: 'area',
          contextual: true,
+         options: {},
       },
-      //
-      // {
-      //    name: 'layoutMap',
-      //    label: 'Widget Map',
-      //    type: 'object',
-      //    contextual: true,
-      //    schema: [
-      //       {
-      //          type: 'area',
-      //          name: 'alpha'
-      //       },
-      //       {
-      //          type: 'area',
-      //          name: 'beta'
-      //       },
-      //       {
-      //          type: 'area',
-      //          name: 'gamma'
-      //       },
-      //    ],
-      // },
 
    ],
 
@@ -119,10 +101,12 @@ module.exports = {
 
       self.layoutAreaNames = [];
 
-      self.schema.filter(item => item.type === 'area').forEach(child => {
-         self.layoutAreaNames.push(child.name);
-         (child.options = child.options || {}).widgets = self.options.widgets;
-      })
+      self.schema
+         .filter(_.matchesProperty('type', 'area'))
+         .forEach(child => {
+            self.layoutAreaNames.push(child.name);
+            child.options.widgets = self.options.widgets;
+         });
 
    },
 
@@ -132,15 +116,14 @@ module.exports = {
          throw new Error(`cms-layout-widgets must be configured with the widgets it can display`);
       }
 
-      const load = self.load;
-      self.load = (req, widgets, callback) => {
+      self.load = _.wrap(self.load, (load, req, widgets, callback) => {
 
          widgets.forEach(widget => {
             widget._areas = self.layoutAreaNames.slice(0, +widget.columnCount).map(key => ({
                key,
                options: {
                   widgets: options.widgets,
-                  limit: widget.singletons ? 1 :10,
+                  limit: widget.singletons ? 1 : 10,
                },
             }));
 
@@ -148,18 +131,12 @@ module.exports = {
          });
 
          return load(req, widgets, callback);
-      };
+      });
 
-      const pushAssets = self.pushAssets;
-      self.pushAssets = (...args) => {
+      self.pushAssets = _.wrap(self.pushAssets, (pushAssets, ...args) => {
          self.pushAsset('stylesheet', 'always', {when: 'always'});
          pushAssets(...args);
-      };
-
-      // self.pushAssets = _.wrap(self.pushAssets, (pushAssets) => {
-      //    self.pushAsset('stylesheet', 'always', { when: 'always' });
-      //    pushAssets();
-      // });
+      });
 
    }
 
