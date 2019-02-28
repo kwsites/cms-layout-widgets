@@ -1,0 +1,33 @@
+{
+  "name": "@kwsites/cms-layout-widgets",
+  "description": "Layout widget compatible with the apostrophe cms",
+  "version": "0.0.0",
+  "private": false,
+  "author": "Steve King <steve@mydev.co>",
+  "contributors": [
+    {
+      "name": "Steve King",
+      "email": "steve@mydev.co"
+    }
+  ],
+  "scripts": {
+    "postversion": "npm publish --access public && git push && git push --tags",
+    "setup": "node ./scripts/setup"
+  },
+  "files": [
+    "index.js",
+    "lib/**/*.*",
+    "public/css/*.less",
+    "public/js/*.js",
+    "views/**/*.*"
+  ],
+  "license": "MIT",
+  "repository": "git://github.com/kwsites/cms-layout-widgets.git",
+  "peerDependencies": {
+    "lodash": "^4"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "less": "^3.9.0"
+  }
+}

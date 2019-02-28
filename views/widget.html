@@ -1,0 +1,8 @@
+<section class="{{ data.widget._containerClass }} block grid-layout mob-col-count-1 layout-widget-container">
+
+   {%- set areas = data.widget._areas -%}
+   {%- for area in areas -%}
+      {{ apos.area(data.widget, area.key, area.options) }}
+   {%- endfor -%}
+
+</section>
