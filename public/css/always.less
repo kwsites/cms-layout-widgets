@@ -1,16 +1,21 @@
 
 .layout-widget-container {
 
-   @media @not-mobile {
+   &.col-count-2 {
 
-      &.col-layout-wide-narrow {
-         .grid-template-columns(2fr 1fr);
-      }
+      @media @not-mobile {
 
-      &.col-layout-narrow-wide {
-         .grid-template-columns(1fr 2fr);
+         &.col-layout-wide-narrow {
+            .grid-template-columns(2fr 1fr);
+         }
+
+         &.col-layout-narrow-wide {
+            .grid-template-columns(1fr 2fr);
+         }
+
       }
 
    }
+
 
 }
