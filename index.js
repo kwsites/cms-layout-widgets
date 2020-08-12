@@ -4,6 +4,8 @@ module.exports = {
    extend: 'apostrophe-widgets',
    label: 'Layout Widget',
 
+   allowNested: false,
+
    addFields: [
 
       {
@@ -98,23 +100,36 @@ module.exports = {
    ],
 
    afterConstruct (self) {
-
-      self.layoutAreaNames = [];
-
-      self.schema
-         .filter(_.matchesProperty('type', 'area'))
-         .forEach(child => {
-            self.layoutAreaNames.push(child.name);
-            child.options.widgets = self.options.widgets;
-         });
-
+      self.applyLayoutSchema();
    },
 
    construct (self, options) {
 
-      if (!options || !options.widgets) {
+      let widgets = options && options.widgets;
+      let areaWidgets = {};
+
+      if (!widgets) {
          throw new Error(`cms-layout-widgets must be configured with the widgets it can display`);
       }
+
+      self.addWidgets = (append) => {
+         Object.assign(widgets, append);
+         self.applyLayoutSchema();
+      };
+
+      self.applyLayoutSchema = () => {
+         areaWidgets = { ...widgets };
+         if (!options.allowNested) {
+            delete areaWidgets[self.__meta.name.replace(/-widgets$/, '')];
+         }
+
+         self.layoutAreaNames = self.schema
+            .filter(_.matchesProperty('type', 'area'))
+            .map(child => {
+               child.options.widgets = areaWidgets;
+               return child.name;
+            });
+      };
 
       self.load = _.wrap(self.load, (load, req, widgets, callback) => {
 
@@ -122,7 +137,7 @@ module.exports = {
             widget._areas = self.layoutAreaNames.slice(0, +widget.columnCount).map(key => ({
                key,
                options: {
-                  widgets: options.widgets,
+                  widgets: areaWidgets,
                   limit: widget.singletons ? 1 : 10,
                },
             }));
@@ -144,7 +159,6 @@ module.exports = {
 
 function cssLayout (widget) {
    let css = `${ widget.gridGapCss } col-count-${ widget.columnCount }`;
-
 
    if (widget._areas.length === 2) {
       css += ` ${ widget.layout2cols }`;
