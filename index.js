@@ -97,6 +97,30 @@ module.exports = {
          options: {},
       },
 
+      {
+         name: 'cssClassNames',
+         label: 'Css Classes',
+         type: 'string',
+         def: ''
+      },
+
+   ],
+
+   arrangeFields: [
+      {
+         name: 'layout',
+         label: 'Layout',
+         fields: [
+            'columnCount',
+            'layout2cols',
+            'singletons',
+            'gridGapCss',
+            'itemAlpha',
+            'itemBeta',
+            'itemGamma',
+            'cssClassNames'
+         ]
+      }
    ],
 
    afterConstruct (self) {
